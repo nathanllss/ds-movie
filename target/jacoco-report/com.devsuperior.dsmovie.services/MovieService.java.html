@@ -45,12 +45,12 @@ import jakarta.persistence.EntityNotFoundException;
 	@Transactional
 	public MovieDTO update(Long id, MovieDTO dto) {
 		try {
-<span class="nc" id="L48">			MovieEntity entity = repository.getReferenceById(id);</span>
-<span class="nc" id="L49">			copyDtoToEntity(dto, entity);</span>
-<span class="nc" id="L50">			entity = repository.save(entity);</span>
-<span class="nc" id="L51">			return new MovieDTO(entity);</span>
-<span class="nc" id="L52">		} catch (EntityNotFoundException e) {</span>
-<span class="nc" id="L53">			throw new ResourceNotFoundException(&quot;Recurso não encontrado&quot;);</span>
+<span class="fc" id="L48">			MovieEntity entity = repository.getReferenceById(id);</span>
+<span class="fc" id="L49">			copyDtoToEntity(dto, entity);</span>
+<span class="fc" id="L50">			entity = repository.save(entity);</span>
+<span class="fc" id="L51">			return new MovieDTO(entity);</span>
+<span class="fc" id="L52">		} catch (EntityNotFoundException e) {</span>
+<span class="fc" id="L53">			throw new ResourceNotFoundException(&quot;Recurso não encontrado&quot;);</span>
 		}
 	}
 

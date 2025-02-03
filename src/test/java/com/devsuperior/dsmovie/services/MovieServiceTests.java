@@ -5,6 +5,7 @@ import com.devsuperior.dsmovie.entities.MovieEntity;
 import com.devsuperior.dsmovie.repositories.MovieRepository;
 import com.devsuperior.dsmovie.services.exceptions.ResourceNotFoundException;
 import com.devsuperior.dsmovie.tests.MovieFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,6 +57,8 @@ public class MovieServiceTests {
         when(repository.findById(existingId)).thenReturn(Optional.of(movie));
         when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
         when(repository.save(any(MovieEntity.class))).thenReturn(movie);
+        when(repository.getReferenceById(existingId)).thenReturn(movie);
+        when(repository.getReferenceById(nonExistingId)).thenThrow(EntityNotFoundException.class);
     }
 
     @Test
@@ -97,10 +100,19 @@ public class MovieServiceTests {
 
     @Test
     public void updateShouldReturnMovieDTOWhenIdExists() {
+
+        MovieDTO result = service.update(existingId, movieDTO);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(existingId);
     }
 
     @Test
     public void updateShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            service.update(nonExistingId, movieDTO);
+        });
     }
 
     @Test
