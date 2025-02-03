@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 public class MovieServiceTests {
@@ -42,7 +42,7 @@ public class MovieServiceTests {
 
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         existingId = 1L;
         nonExistingId = 1000L;
         dependentId = 4L;
@@ -55,6 +55,7 @@ public class MovieServiceTests {
         when(repository.searchByTitle(anyString(), any(Pageable.class))).thenReturn(page);
         when(repository.findById(existingId)).thenReturn(Optional.of(movie));
         when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
+        when(repository.save(any(MovieEntity.class))).thenReturn(movie);
     }
 
     @Test
@@ -87,6 +88,11 @@ public class MovieServiceTests {
 
     @Test
     public void insertShouldReturnMovieDTO() {
+
+        MovieDTO result = service.insert(movieDTO);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo(movieDTO.getId());
     }
 
     @Test
