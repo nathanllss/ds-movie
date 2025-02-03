@@ -3,6 +3,7 @@ package com.devsuperior.dsmovie.services;
 import com.devsuperior.dsmovie.dto.MovieDTO;
 import com.devsuperior.dsmovie.entities.MovieEntity;
 import com.devsuperior.dsmovie.repositories.MovieRepository;
+import com.devsuperior.dsmovie.services.exceptions.DatabaseException;
 import com.devsuperior.dsmovie.services.exceptions.ResourceNotFoundException;
 import com.devsuperior.dsmovie.tests.MovieFactory;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -54,11 +57,22 @@ public class MovieServiceTests {
 
 
         when(repository.searchByTitle(anyString(), any(Pageable.class))).thenReturn(page);
+
         when(repository.findById(existingId)).thenReturn(Optional.of(movie));
         when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
+
         when(repository.save(any(MovieEntity.class))).thenReturn(movie);
+
         when(repository.getReferenceById(existingId)).thenReturn(movie);
         when(repository.getReferenceById(nonExistingId)).thenThrow(EntityNotFoundException.class);
+
+        when(repository.existsById(existingId)).thenReturn(true);
+        when(repository.existsById(dependentId)).thenReturn(true);
+        when(repository.existsById(nonExistingId)).thenReturn(false);
+
+        doNothing().when(repository).deleteById(existingId);
+
+        doThrow(DataIntegrityViolationException.class).when(repository).deleteById(dependentId);
     }
 
     @Test
@@ -117,13 +131,26 @@ public class MovieServiceTests {
 
     @Test
     public void deleteShouldDoNothingWhenIdExists() {
+
+        assertDoesNotThrow(() -> {
+            service.delete(existingId);
+        });
+
     }
 
     @Test
     public void deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            service.delete(nonExistingId);
+        });
     }
 
     @Test
     public void deleteShouldThrowDatabaseExceptionWhenDependentId() {
+
+        assertThrows(DatabaseException.class, () -> {
+            service.delete(dependentId);
+        });
     }
 }

@@ -55,14 +55,14 @@ import jakarta.persistence.EntityNotFoundException;
 	}
 
 	public void delete(Long id) {
-<span class="nc bnc" id="L58" title="All 2 branches missed.">		if (!repository.existsById(id))</span>
-<span class="nc" id="L59">			throw new ResourceNotFoundException(&quot;Recurso não encontrado&quot;);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (!repository.existsById(id))</span>
+<span class="fc" id="L59">			throw new ResourceNotFoundException(&quot;Recurso não encontrado&quot;);</span>
 		try {
-<span class="nc" id="L61">			repository.deleteById(id);</span>
-<span class="nc" id="L62">		} catch (DataIntegrityViolationException e) {</span>
-<span class="nc" id="L63">			throw new DatabaseException(&quot;Falha de integridade referencial&quot;);</span>
-<span class="nc" id="L64">		}</span>
-<span class="nc" id="L65">	}</span>
+<span class="fc" id="L61">			repository.deleteById(id);</span>
+<span class="fc" id="L62">		} catch (DataIntegrityViolationException e) {</span>
+<span class="fc" id="L63">			throw new DatabaseException(&quot;Falha de integridade referencial&quot;);</span>
+<span class="fc" id="L64">		}</span>
+<span class="fc" id="L65">	}</span>
 
 	private void copyDtoToEntity(MovieDTO dto, MovieEntity entity) {
 <span class="fc" id="L68">		entity.setTitle(dto.getTitle());</span>
